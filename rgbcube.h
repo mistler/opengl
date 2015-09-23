@@ -5,13 +5,14 @@
 #include <QGLWidget>
 #include <iostream>
 
-class RgbCube
-{
+#include "mesh.h"
+
+class RgbCube: public Mesh{
 public:
     RgbCube();
     ~RgbCube();
 
-    void show();
+    void render();
 
 private:
     GLfloat* cubeVertexArray;

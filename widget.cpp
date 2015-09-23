@@ -1,9 +1,21 @@
 #include "widget.h"
 
+
 Widget::Widget(QWidget *parent)
     : QGLWidget(parent)
 {
     resize(600, 600);
+    cubes = new Mesh*[N];
+    for(int i = 0; i < N; i++){
+        cubes[i] = new RgbCube();
+    }
+}
+
+Widget::~Widget(){
+    for(int i = 0; i < N; i++){
+        delete cubes[i];
+    }
+    delete[] cubes;
 }
 
 void Widget::initializeGL()
@@ -20,10 +32,13 @@ void Widget::resizeGL(int nWidth, int nHeight)
     glViewport(0, 0, nHeight, nHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-10., 10., -10., 10., -10.0, 10.0);
-    glViewport(0, 0, (GLint)nWidth, (GLint)nHeight);
+    glOrtho(-5., 5., -5., 5., -5., 5.);
+    glFrustum(-1.0, 1.0,
+              -1.0, 1.0,
+             15., 3.0);
     currentWidth = nWidth;
     currentHeight = nHeight;
+
 }
 
 void Widget::paintGL()
@@ -33,21 +48,29 @@ void Widget::paintGL()
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
-
-    glPushMatrix();
+    glTranslatef(.0f, .0f, -22.f);
     glRotatef(yAxisRotation, 0.0, 1.0, 0.0);
     glRotatef(xAxisRotation, 1.0, 0.0, 0.0);
     glTranslatef(-0.5f, -0.5f, -0.5f);
-    rgbCube[0].show();
+    cubes[0]->render();
     glTranslatef(0.f, 4.f, 0.f);
-    rgbCube[1].show();
+    cubes[1]->render();
     glRotatef(yAxisRotation, 0.0, 1.0, 0.0);
     glRotatef(xAxisRotation, 1.0, 0.0, 0.0);
     glTranslatef(0.f, 2.f, 0.f);
-    rgbCube[2].show();
-    glPopMatrix();
+    cubes[2]->render();
+}
 
+void Widget::makeFrustum(double fovY, double aspectRatio, double front, double back)
+{
+    const double DEG2RAD = 3.14159265 / 180;
 
+    double tangent = tan(fovY/2 * DEG2RAD);   // tangent of half fovY
+    double height = front * tangent;          // half height of near plane
+    double width = height * aspectRatio;      // half width of near plane
+
+    // params: left, right, bottom, top, near, far
+    glFrustum(-width, width, -height, height, front, back);
 }
 
 void Widget::mousePressEvent(QMouseEvent *event)

@@ -8,7 +8,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         widget.cpp \
-    rgbcube.cpp
+    rgbcube.cpp \
+    mesh.cpp
 
 HEADERS  += widget.h \
-    rgbcube.h
+    rgbcube.h \
+    mesh.h

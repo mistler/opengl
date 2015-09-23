@@ -25,12 +25,10 @@ RgbCube::RgbCube(){
             0,4,7,3};
 }
 
-void RgbCube::show(){
-
+void RgbCube::render(){
     glVertexPointer(3, GL_FLOAT, 0, cubeVertexArray);
     glColorPointer(3, GL_FLOAT, 0, cubeColorArray);
     glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndexArray);
-
 }
 
 RgbCube::~RgbCube(){
