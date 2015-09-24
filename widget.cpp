@@ -1,28 +1,30 @@
 #include "widget.h"
 
+#include "rgbcube.h"
+#include "sphere.h"
 
 Widget::Widget(QWidget *parent)
     : QGLWidget(parent)
 {
     resize(600, 600);
-    cubes = new Mesh*[N];
+    meshes = new Mesh*[N];
     for(int i = 0; i < N; i++){
-        cubes[i] = new RgbCube();
+        meshes[i] = new Sphere(SPHERE_TRIANGLES);
     }
 }
 
 Widget::~Widget(){
     for(int i = 0; i < N; i++){
-        delete cubes[i];
+        delete meshes[i];
     }
-    delete[] cubes;
+    delete[] meshes;
 }
 
 void Widget::initializeGL()
 {
    glClearColor(0.0, 0.0, 0.0, 1.0);
    glEnable(GL_DEPTH_TEST);
-   glEnable(GL_CULL_FACE);
+   //glEnable(GL_CULL_FACE);
    glEnableClientState(GL_VERTEX_ARRAY);
    glEnableClientState(GL_COLOR_ARRAY);
 }
@@ -52,26 +54,15 @@ void Widget::paintGL()
     glRotatef(yAxisRotation, 0.0, 1.0, 0.0);
     glRotatef(xAxisRotation, 1.0, 0.0, 0.0);
     glTranslatef(-0.5f, -0.5f, -0.5f);
-    cubes[0]->render();
+    meshes[0]->render();
     glTranslatef(0.f, 4.f, 0.f);
-    cubes[1]->render();
+    meshes[1]->render();
     glRotatef(yAxisRotation, 0.0, 1.0, 0.0);
     glRotatef(xAxisRotation, 1.0, 0.0, 0.0);
     glTranslatef(0.f, 2.f, 0.f);
-    cubes[2]->render();
+    meshes[2]->render();
 }
 
-void Widget::makeFrustum(double fovY, double aspectRatio, double front, double back)
-{
-    const double DEG2RAD = 3.14159265 / 180;
-
-    double tangent = tan(fovY/2 * DEG2RAD);   // tangent of half fovY
-    double height = front * tangent;          // half height of near plane
-    double width = height * aspectRatio;      // half width of near plane
-
-    // params: left, right, bottom, top, near, far
-    glFrustum(-width, width, -height, height, front, back);
-}
 
 void Widget::mousePressEvent(QMouseEvent *event)
 {

@@ -9,8 +9,10 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     rgbcube.cpp \
-    mesh.cpp
+    mesh.cpp \
+    sphere.cpp
 
 HEADERS  += widget.h \
     rgbcube.h \
-    mesh.h
+    mesh.h \
+    sphere.h

@@ -5,7 +5,6 @@
 #include <QGLWidget>
 
 #include "mesh.h"
-#include "rgbcube.h"
 
 class Widget : public QGLWidget
 {
@@ -24,6 +23,7 @@ protected:
 private:
 
    const int N = 3;
+   const int SPHERE_TRIANGLES = 1000;
 
     QPoint pressPosition;
     QPoint releasePosition;
@@ -32,7 +32,7 @@ private:
     GLfloat currentWidth;
     GLfloat currentHeight;
 
-    Mesh** cubes;
+    Mesh** meshes;
     //RgbCube rotatingCube;
     //RgbCube doubleRotatingCube;
 
