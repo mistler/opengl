@@ -24,7 +24,7 @@ void Widget::initializeGL()
 {
    glClearColor(0.0, 0.0, 0.0, 1.0);
    glEnable(GL_DEPTH_TEST);
-   //glEnable(GL_CULL_FACE);
+   glEnable(GL_CULL_FACE);
    glEnableClientState(GL_VERTEX_ARRAY);
    glEnableClientState(GL_COLOR_ARRAY);
 }
