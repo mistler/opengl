@@ -32,13 +32,13 @@ void Widget::resizeGL(int nWidth, int nHeight)
     glViewport(0, 0, nHeight, nHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-5., 5., -5., 5., -5., 5.);
+    //glOrtho(-5., 5., -5., 5., -5., 5.);
     glFrustum(-1.0, 1.0,
               -1.0, 1.0,
-             15., 3.0);
+             2., 20.0);
     currentWidth = nWidth;
     currentHeight = nHeight;
-
+    glTranslatef(.0f, .0f, -13.f);
 }
 
 void Widget::paintGL()
@@ -48,7 +48,7 @@ void Widget::paintGL()
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
-    glTranslatef(.0f, .0f, -22.f);
+
     glRotatef(yAxisRotation, 0.0, 1.0, 0.0);
     glRotatef(xAxisRotation, 1.0, 0.0, 0.0);
     glTranslatef(-0.5f, -0.5f, -0.5f);
