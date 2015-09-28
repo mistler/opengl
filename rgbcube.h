@@ -1,11 +1,10 @@
 #ifndef RGBCUBE_H
 #define RGBCUBE_H
 
+#include "mesh.h"
+
 #include <QtGui>
 #include <QGLWidget>
-#include <iostream>
-
-#include "mesh.h"
 
 class RgbCube: public Mesh{
 public:
