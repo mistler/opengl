@@ -3,26 +3,19 @@
 
 #include "mesh.h"
 
-#include <QtGui>
-#include <QGLWidget>
-
 class Sphere: public Mesh
 {
 public:
     Sphere(int numberOfPoints);
     ~Sphere();
 
-    void render();
-
 private:
 
-    int n, t;
     int vertices;
-    int indexes;
+    int indices;
 
-    GLfloat* vertexArray;
-    GLfloat* colorArray;
-    GLuint* indexArray;
+    VertexData* vertArray;
+    GLuint* indArray;
 };
 
 #endif // SPHERE_H

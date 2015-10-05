@@ -1,4 +1,4 @@
-#include "rgbcube.h"
+#include "meshes/rgbcube.h"
 
 RgbCube::RgbCube(){
     cubeVertexArray = new GLfloat[24]{0.0, 0.0, 1.0,
@@ -25,9 +25,9 @@ RgbCube::RgbCube(){
             0,4,7,3};
 }
 
-void RgbCube::render(){
-    glVertexPointer(3, GL_FLOAT, 0, cubeVertexArray);
-    glColorPointer(3, GL_FLOAT, 0, cubeColorArray);
+void RgbCube::render(QOpenGLShaderProgram *program){
+    //glVertexPointer(3, GL_FLOAT, 0, cubeVertexArray);
+    //glColorPointer(3, GL_FLOAT, 0, cubeColorArray);
     glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, cubeIndexArray);
 }
 

@@ -3,15 +3,12 @@
 
 #include "mesh.h"
 
-#include <QtGui>
-#include <QGLWidget>
-
 class RgbCube: public Mesh{
 public:
     RgbCube();
     ~RgbCube();
 
-    void render();
+    void render(QOpenGLShaderProgram *program);
 
 private:
     GLfloat* cubeVertexArray;
