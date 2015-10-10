@@ -15,7 +15,7 @@ struct VertexData{
 
 class Mesh: protected QOpenGLFunctions{
 public:
-    Mesh(): indexBuf(QOpenGLBuffer::IndexBuffer){
+    Mesh(QOpenGLShaderProgram *program): program(program), indexBuf(QOpenGLBuffer::IndexBuffer){
         initializeOpenGLFunctions();
 
         // Generate 2 VBOs
@@ -27,7 +27,7 @@ public:
         indexBuf.destroy();
     }
 
-    virtual void render(QOpenGLShaderProgram *program){
+    virtual void render(){
         // Tell OpenGL which VBOs to use
         arrayBuf.bind();
         indexBuf.bind();
@@ -67,6 +67,8 @@ protected:
     }
 
 protected:
+    QOpenGLShaderProgram *program;
+
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
 

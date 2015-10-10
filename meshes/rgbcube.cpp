@@ -1,6 +1,6 @@
 #include "meshes/rgbcube.h"
 
-RgbCube::RgbCube(){
+RgbCube::RgbCube(): Mesh(0){
     cubeVertexArray = new GLfloat[24]{0.0, 0.0, 1.0,
             0.0, 1.0, 1.0,
             1.0, 1.0, 1.0,

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fsphere.glsl</file>
+        <file>vsphere.glsl</file>
+    </qresource>
+</RCC>

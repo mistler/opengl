@@ -19,9 +19,8 @@ HEADERS += \
     meshes/polygonalcube.h
 
 RESOURCES += \
-    shaders.qrc \
+    shaders/sphere/sphereshaders.qrc \
+    shaders/polygonalcube/polygonalcubeshaders.qrc \
     textures.qrc
 
-# install
-target.path = $$[QT_INSTALL_EXAMPLES]/opengl/cube
 INSTALLS += target

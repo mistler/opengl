@@ -71,14 +71,9 @@ protected:
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
 
-    void initShaders();
-    void initTextures();
-
 private:
     QBasicTimer timer;
     QOpenGLShaderProgram program;
-
-    QOpenGLTexture *texture;
 
     QMatrix4x4 projection;
 
@@ -90,6 +85,9 @@ private:
 
     const int POLYGONES = 10;
     Mesh* mesh;
+
+    float tt;
+    float delta;
 
 };
 
