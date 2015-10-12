@@ -12,7 +12,8 @@ varying vec2 v_texcoord;
 void main()
 {
     // Set fragment color from texture
-    gl_FragColor = vec4(0.85, 0.86, 0.0, 1.0);
+    //gl_FragColor = vec4(0.85, 0.86, 0.0, 1.0);
+    gl_FragColor = (noise4(v_texcoord.x) + 1.0) / 2.0;
 }
 //! [0]
 
