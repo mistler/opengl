@@ -51,6 +51,7 @@
 #include <QOpenGLTexture>
 
 #include "mesh.h"
+#include "light.h"
 
 class GeometryEngine;
 
@@ -85,6 +86,7 @@ private:
 
     const int POLYGONES = 10;
     Mesh* mesh;
+    Light* light;
 
     float tt;
     float delta;

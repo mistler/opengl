@@ -1,6 +1,17 @@
 #include "meshes/polygonalcube.h"
+#include "materials/defaultmaterial.h"
 
-PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): Mesh(program){
+PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): indexBuf(QOpenGLBuffer::IndexBuffer),
+                                                                    vShader(QOpenGLShader::Vertex),
+                                                                    fShader(QOpenGLShader::Fragment),
+                                                                    material(new DefaultMaterial()){
+
+    initializeOpenGLFunctions();
+    this->program = program;
+
+    // Generate 2 VBOs
+    arrayBuf.create();
+    indexBuf.create();
 
     initShaders();
 
@@ -17,17 +28,17 @@ PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): Mesh(program
 
 
     initSide(vertArray + (N+1) * (N+1) * 0, indArray + (N)*((N+1) * 2 + 2) * 0,  1.0f, -1.0f, -1.0f,
-             -1.0f / n * 2,  1.0f / n * 2,  0.0f / n * 2, (N+1) * (N+1) * 0);
+             -1.0f / n * 2,  1.0f / n * 2,  0.0f / n * 2, (N+1) * (N+1) * 0, -1);
     initSide(vertArray + (N+1) * (N+1) * 1, indArray + (N)*((N+1) * 2 + 2) * 1, -1.0f,  1.0f, -1.0f,
-              1.0f / n * 2,  0.0f / n * 2,  1.0f / n * 2, (N+1) * (N+1) * 1);
+              1.0f / n * 2,  0.0f / n * 2,  1.0f / n * 2, (N+1) * (N+1) * 1, 1);
     initSide(vertArray + (N+1) * (N+1) * 2, indArray + (N)*((N+1) * 2 + 2) * 2,  1.0f,  1.0f,  1.0f,
-             -1.0f / n * 2, -1.0f / n * 2,  0.0f / n * 2, (N+1) * (N+1) * 2);
+             -1.0f / n * 2, -1.0f / n * 2,  0.0f / n * 2, (N+1) * (N+1) * 2, 1);
     initSide(vertArray + (N+1) * (N+1) * 3, indArray + (N)*((N+1) * 2 + 2) * 3,  1.0f,  1.0f, -1.0f,
-              0.0f / n * 2, -1.0f / n * 2,  1.0f / n * 2, (N+1) * (N+1) * 3);
+              0.0f / n * 2, -1.0f / n * 2,  1.0f / n * 2, (N+1) * (N+1) * 3, 1);
     initSide(vertArray + (N+1) * (N+1) * 4, indArray + (N)*((N+1) * 2 + 2) * 4, -1.0f, -1.0f,  1.0f,
-              1.0f / n * 2,  0.0f / n * 2, -1.0f / n * 2, (N+1) * (N+1) * 4);
+              1.0f / n * 2,  0.0f / n * 2, -1.0f / n * 2, (N+1) * (N+1) * 4, -1);
     initSide(vertArray + (N+1) * (N+1) * 5, indArray + (N)*((N+1) * 2 + 2) * 5, -1.0f,  1.0f,  1.0f,
-              0.0f / n * 2, -1.0f / n * 2, -1.0f / n * 2, (N+1) * (N+1) * 5);
+              0.0f / n * 2, -1.0f / n * 2, -1.0f / n * 2, (N+1) * (N+1) * 5, -1);
 
     initGeometry(vertArray, indArray, vertices, indices, GL_TRIANGLE_STRIP);
     initTextures();
@@ -35,22 +46,25 @@ PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): Mesh(program
 }
 
 PolygonalCube::~PolygonalCube(){
+    arrayBuf.destroy();
+    indexBuf.destroy();
     delete[] vertArray;
     delete[] indArray;
     delete texture;
+    delete material;
 }
 
-void PolygonalCube::initSide(VertexData* data, GLuint* ind, float x, float y, float z, float dx, float dy, float dz, int offset){
+void PolygonalCube::initSide(VertexData* data, GLuint* ind, float x, float y, float z, float dx, float dy, float dz, int offset, int direction){
     for(int i = 0; i <= N; i++){
         for(int j = 0; j <= N; j++){
             if(dx == 0){
-                data[i * (N+1) + j] = {QVector3D(x, y + dy * i, z + dz * j), QVector2D(0.0f, 0.0f)};
+                data[i * (N+1) + j] = {QVector3D(x, y + dy * i, z + dz * j), QVector2D(0.0f, 0.0f), QVector3D(1.0f * direction, 0.0f, 0.0f)};
             }
             if(dy == 0){
-                data[i * (N+1) + j] = {QVector3D(x + dx * i, y, z + dz * j), QVector2D(0.0f, 0.0f)};
+                data[i * (N+1) + j] = {QVector3D(x + dx * i, y, z + dz * j), QVector2D(0.0f, 0.0f), QVector3D(0.0f, 1.0f * direction, 0.0f)};
             }
             if(dz == 0){
-                data[i * (N+1) + j] = {QVector3D(x + dx * j, y + dy * i, z), QVector2D(0.0f, 0.0f)};
+                data[i * (N+1) + j] = {QVector3D(x + dx * j, y + dy * i, z), QVector2D(0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f * direction)};
             }
         }
     }
@@ -65,8 +79,17 @@ void PolygonalCube::initSide(VertexData* data, GLuint* ind, float x, float y, fl
     }
 }
 
-void PolygonalCube::render(){
+void PolygonalCube::render(QMatrix4x4& projection, QMatrix4x4& matrix, Light* light){
 
+
+    program->addShader(&vShader);
+    program->addShader(&fShader);
+    program->link();
+    program->bind();
+
+    program->setUniformValue("mvp_matrix", projection * matrix);
+    program->setUniformValue("mv_matrix", matrix);
+    program->setUniformValue("normal_matrix", matrix.inverted().transposed());
 
     texture->bind();
 
@@ -108,8 +131,21 @@ void PolygonalCube::render(){
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
+    offset += sizeof(QVector2D);
+
+    int normalLocation = program->attributeLocation("a_normal");
+    program->enableAttributeArray(normalLocation);
+    program->setAttributeBuffer(normalLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+
+    light->load(program);
+    material->load(program);
+
+
     // Draw cube geometry using indices from VBO 1
     glDrawElements(mode, indicesSize, GL_UNSIGNED_INT, 0);
+
+    program->release();
 }
 
 void PolygonalCube::initTextures(){
@@ -129,17 +165,21 @@ void PolygonalCube::initTextures(){
 }
 
 void PolygonalCube::initShaders(){
-    // Compile vertex shader
-    program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl");
 
-    // Compile fragment shader
-    program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl");
-
-    // Link shader pipeline
-    program->link();
+    vShader.compileSourceFile(":/vshader.glsl");
+    fShader.compileSourceFile(":/fshader.glsl");
 
 
-    // Bind shader pipeline for use
-    program->bind();
+}
 
+void PolygonalCube::initGeometry(VertexData vertices[], GLuint indices[], int vertSize, int indSize, GLenum mode_){
+    indicesSize = indSize;
+    mode = mode_;
+
+    arrayBuf.bind();
+    arrayBuf.allocate(vertices, vertSize * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(indices, indSize * sizeof(GLuint));
 }

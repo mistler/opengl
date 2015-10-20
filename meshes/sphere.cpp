@@ -5,7 +5,16 @@
 #include <time.h>
 #include <stdlib.h>
 
-Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program): Mesh(program){
+Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program):
+    vShader(QOpenGLShader::Vertex),
+    fShader(QOpenGLShader::Fragment){
+
+    initializeOpenGLFunctions();
+    this->program = program;
+
+    // Generate 2 VBOs
+    arrayBuf.create();
+    indexBuf.create();
 
     initShaders();
     initTextures();
@@ -65,12 +74,24 @@ void Sphere::initTextures(){
 }
 
 void Sphere::initShaders(){
+
+    vShader.compileSourceFile(":/vsphere.glsl");
+    fShader.compileSourceFile(":/fsphere.glsl");
+
+}
+
+void Sphere::render(QMatrix4x4& projection, QMatrix4x4& matrix){
+
+
+    program->addShader(&vShader);
+    program->addShader(&fShader);
+    /*
     // Compile vertex shader
-    program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vsphere.glsl");
+    program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl");
 
     // Compile fragment shader
-    program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fsphere.glsl");
-
+    program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl");
+    */
     // Link shader pipeline
     program->link();
 
@@ -78,10 +99,7 @@ void Sphere::initShaders(){
     // Bind shader pipeline for use
     program->bind();
 
-}
-
-void Sphere::render(){
-
+    program->setUniformValue("mvp_matrix", projection * matrix);
 
     texture->bind();
 
@@ -128,7 +146,22 @@ void Sphere::render(){
 }
 
 Sphere::~Sphere(){
+    arrayBuf.destroy();
+    indexBuf.destroy();
     delete texture;
     delete[] vertArray;
     delete[] indArray;
 }
+
+void Sphere::initGeometry(VertexData vertices[], GLuint indices[], int vertSize, int indSize, GLenum mode_){
+    indicesSize = indSize;
+    mode = mode_;
+
+    arrayBuf.bind();
+    arrayBuf.allocate(vertices, vertSize * sizeof(VertexData));
+
+    // Transfer index data to VBO 1
+    indexBuf.bind();
+    indexBuf.allocate(indices, indSize * sizeof(GLuint));
+}
+

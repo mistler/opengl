@@ -47,6 +47,10 @@
 #include "meshes/polygonalcube.h"
 #include "meshes/sphere.h"
 
+#include "lights/pointlightsource.h"
+#include "lights/directionallightsource.h"
+#include "lights/spotlightsource.h"
+
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     angularSpeed(0)
@@ -59,6 +63,7 @@ MainWidget::~MainWidget()
     // and the buffers.
     makeCurrent();
     delete mesh;
+    delete light;
     doneCurrent();
 }
 
@@ -121,8 +126,25 @@ void MainWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 //! [2]
 
-    //mesh = new PolygonalCube(POLYGONES, &program);
-    mesh = new Sphere(POLYGONES, &program);
+
+    //===================================================================================================================================================
+
+
+    mesh = new PolygonalCube(POLYGONES, &program);
+    //mesh = new Sphere(POLYGONES, &program);
+
+
+
+
+    light = new Light();
+    //light->addLightSource(new PointLightSource(QVector4D(50.0f, 50.0f, 50.0f, 1.0f), QVector4D(0.8f, 0.2f, 0.2f, 1.0f), QVector4D(0.05f, 0.1f, 0.05f, 1.0f), QVector4D(0.3f, 0.5f, 0.1f, 1.0f), 0.0001f));
+    //light->addLightSource(new DirectionalLightSource(QVector4D(1.0f, -1.0f, -1.0f, 1.0f), QVector4D(0.2f, 0.2f, 0.6f, 1.0f), QVector4D(0.3f, 0.5f, 0.1f, 1.0f)));
+    light->addLightSource(new SpotLightSource(QVector4D(0.0f, 50.0f, 0.0f, 1.0f), QVector4D(0.0f, 0.0f, -1.0f, 1.0f), QVector4D(0.2f, 0.7f, 0.2f, 1.0f), QVector4D(0.2f, 0.2f, 0.1f, 1.0f), QVector4D(0.4f, 0.5f, 0.1f, 1.0f), 0.1f, 0.2f, 0.0005f));
+
+
+
+
+    //===================================================================================================================================================
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(12, this);
@@ -154,9 +176,6 @@ void MainWidget::paintGL()
     matrix.translate(0.0, 0.0, -5.0);
     matrix.rotate(rotation);
 
-    // Set modelview-projection matrix
-    program.setUniformValue("mvp_matrix", projection * matrix);
+    mesh->render(projection, matrix, light);
 
-    // Draw cube geometry
-    mesh->render();
 }
