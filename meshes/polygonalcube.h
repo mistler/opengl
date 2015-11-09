@@ -17,7 +17,6 @@ public:
 
 private:
     void initSide(VertexData* data, GLuint* ind, float x, float y, float z, float dx, float dy, float dz, int offset, int direction);
-    void initTextures();
     void initShaders();
     void initGeometry(VertexData vertices[], GLuint indices[], int vertSize, int indSize, GLenum mode_);
 
@@ -34,7 +33,6 @@ private:
 
     Material* material;
 
-    QOpenGLTexture* texture;
     QOpenGLShader vShader;
     QOpenGLShader fShader;
 

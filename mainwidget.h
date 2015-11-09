@@ -84,7 +84,7 @@ private:
     QQuaternion rotation;
 
 
-    const int POLYGONES = 10;
+    const int POLYGONES = 20;
     Mesh* mesh;
     Light* light;
 

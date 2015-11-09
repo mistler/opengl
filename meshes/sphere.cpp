@@ -5,9 +5,12 @@
 #include <time.h>
 #include <stdlib.h>
 
-Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program):
-    vShader(QOpenGLShader::Vertex),
-    fShader(QOpenGLShader::Fragment){
+#include "materials/defaultmaterial.h"
+
+Sphere::Sphere(int n, QOpenGLShaderProgram* program): indexBuf(QOpenGLBuffer::IndexBuffer),
+                                                                    vShader(QOpenGLShader::Vertex),
+                                                                    fShader(QOpenGLShader::Fragment),
+                                                                    material(new DefaultMaterial(program)){
 
     initializeOpenGLFunctions();
     this->program = program;
@@ -17,12 +20,11 @@ Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program):
     indexBuf.create();
 
     initShaders();
-    initTextures();
 
     tt = 0.0f;
     delta = 0.01f;
 
-    int t = numberOfPoints;
+    int t = n;
     vertices = 2 * (t + 1) * t;
     indices = 4 * t * t + 2 * t;
     vertArray = new VertexData[vertices];
@@ -38,7 +40,8 @@ Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program):
         double sini = sin(i);
         double cosi = cos(i);
         for(int jter = 0; jter < 2 * t; jter++){
-            vertArray[k++] = {QVector3D(sini * cos(j), cosi, sin(j) * sini), QVector2D(0.0f, 0.0f)};
+            QVector3D tmp(sini * cos(j), cosi, sin(j) * sini);
+            vertArray[k++] = {tmp, QVector2D(jter / 2.f / t, (iter + 1.f) / t), tmp};
             j += d;
         }
         i += d;
@@ -46,66 +49,34 @@ Sphere::Sphere(int numberOfPoints, QOpenGLShaderProgram *program):
     k = 0;
     for(int i = 0; i < t; i++){
         for(int j = 0; j < 2 * t; j++){
-            indArray[k++] = j + i * 2 * t;
             indArray[k++] = j + (i + 1) * 2 * t;
+            indArray[k++] = j + i * 2 * t;
         }
-        indArray[k++] = i * 2 * t;
         indArray[k++] = (i + 1) * 2 * t;
+        indArray[k++] = i * 2 * t;
     }
-
 
     initGeometry(vertArray, indArray, vertices, indices, GL_TRIANGLE_STRIP);
 }
 
-void Sphere::initTextures(){
-
-    // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
-
-    // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
-
-    // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
-
-    // Wrap texture coordinates by repeating
-    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
+Sphere::~Sphere(){
+    arrayBuf.destroy();
+    indexBuf.destroy();
+    delete[] vertArray;
+    delete[] indArray;
+    delete material;
 }
 
-void Sphere::initShaders(){
-
-    vShader.compileSourceFile(":/vsphere.glsl");
-    fShader.compileSourceFile(":/fsphere.glsl");
-
-}
-
-void Sphere::render(QMatrix4x4& projection, QMatrix4x4& matrix){
-
+void Sphere::render(QMatrix4x4& projection, QMatrix4x4& matrix, Light* light){
 
     program->addShader(&vShader);
     program->addShader(&fShader);
-    /*
-    // Compile vertex shader
-    program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl");
-
-    // Compile fragment shader
-    program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl");
-    */
-    // Link shader pipeline
     program->link();
-
-
-    // Bind shader pipeline for use
     program->bind();
 
     program->setUniformValue("mvp_matrix", projection * matrix);
-
-    texture->bind();
-
-    // Use texture unit 0 which contains cube.png
-    program->setUniformValue("texture", 0);
-
+    program->setUniformValue("mv_matrix", matrix);
+    program->setUniformValue("normal_matrix", matrix.transposed().inverted());
 
     tt += delta;
     if(tt > 1.0f){
@@ -141,16 +112,29 @@ void Sphere::render(QMatrix4x4& projection, QMatrix4x4& matrix){
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
+    offset += sizeof(QVector2D);
+
+    int normalLocation = program->attributeLocation("a_normal");
+    program->enableAttributeArray(normalLocation);
+    program->setAttributeBuffer(normalLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
+
+
+    light->load(program);
+    material->load(program);
+
+
     // Draw cube geometry using indices from VBO 1
     glDrawElements(mode, indicesSize, GL_UNSIGNED_INT, 0);
+
+    program->release();
 }
 
-Sphere::~Sphere(){
-    arrayBuf.destroy();
-    indexBuf.destroy();
-    delete texture;
-    delete[] vertArray;
-    delete[] indArray;
+void Sphere::initShaders(){
+
+    vShader.compileSourceFile(":/vsphere.glsl");
+    fShader.compileSourceFile(":/fsphere.glsl");
+
+
 }
 
 void Sphere::initGeometry(VertexData vertices[], GLuint indices[], int vertSize, int indSize, GLenum mode_){
@@ -164,4 +148,3 @@ void Sphere::initGeometry(VertexData vertices[], GLuint indices[], int vertSize,
     indexBuf.bind();
     indexBuf.allocate(indices, indSize * sizeof(GLuint));
 }
-

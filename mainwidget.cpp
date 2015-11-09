@@ -130,16 +130,14 @@ void MainWidget::initializeGL()
     //===================================================================================================================================================
 
 
-    mesh = new PolygonalCube(POLYGONES, &program);
-    //mesh = new Sphere(POLYGONES, &program);
-
-
+    //mesh = new PolygonalCube(POLYGONES, &program);
+    mesh = new Sphere(POLYGONES, &program);
 
 
     light = new Light();
-    //light->addLightSource(new PointLightSource(QVector4D(50.0f, 50.0f, 50.0f, 1.0f), QVector4D(0.8f, 0.2f, 0.2f, 1.0f), QVector4D(0.05f, 0.1f, 0.05f, 1.0f), QVector4D(0.3f, 0.5f, 0.1f, 1.0f), 0.0001f));
+    light->addLightSource(new PointLightSource(QVector4D(50.0f, 50.0f, 50.0f, 1.0f), QVector4D(0.8f, 0.2f, 0.2f, 1.0f), QVector4D(0.05f, 0.1f, 0.05f, 1.0f), QVector4D(0.3f, 0.5f, 0.1f, 1.0f), 0.00002f));
     //light->addLightSource(new DirectionalLightSource(QVector4D(1.0f, -1.0f, -1.0f, 1.0f), QVector4D(0.2f, 0.2f, 0.6f, 1.0f), QVector4D(0.3f, 0.5f, 0.1f, 1.0f)));
-    light->addLightSource(new SpotLightSource(QVector4D(0.0f, 50.0f, 0.0f, 1.0f), QVector4D(0.0f, 0.0f, -1.0f, 1.0f), QVector4D(0.2f, 0.7f, 0.2f, 1.0f), QVector4D(0.2f, 0.2f, 0.1f, 1.0f), QVector4D(0.4f, 0.5f, 0.1f, 1.0f), 0.1f, 0.2f, 0.0005f));
+    //light->addLightSource(new SpotLightSource(QVector4D(0.0f, 50.0f, 0.0f, 1.0f), QVector4D(0.0f, 0.0f, -1.0f, 1.0f), QVector4D(0.2f, 0.7f, 0.2f, 1.0f), QVector4D(0.2f, 0.2f, 0.1f, 1.0f), QVector4D(0.4f, 0.5f, 0.8f, 1.0f), 0.1f, 0.2f, 0.0005f));
 
 
 

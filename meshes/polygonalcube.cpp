@@ -4,7 +4,7 @@
 PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): indexBuf(QOpenGLBuffer::IndexBuffer),
                                                                     vShader(QOpenGLShader::Vertex),
                                                                     fShader(QOpenGLShader::Fragment),
-                                                                    material(new DefaultMaterial()){
+                                                                    material(new DefaultMaterial(program)){
 
     initializeOpenGLFunctions();
     this->program = program;
@@ -41,7 +41,6 @@ PolygonalCube::PolygonalCube(int n, QOpenGLShaderProgram* program): indexBuf(QOp
               0.0f / n * 2, -1.0f / n * 2, -1.0f / n * 2, (N+1) * (N+1) * 5, -1);
 
     initGeometry(vertArray, indArray, vertices, indices, GL_TRIANGLE_STRIP);
-    initTextures();
 
 }
 
@@ -50,7 +49,7 @@ PolygonalCube::~PolygonalCube(){
     indexBuf.destroy();
     delete[] vertArray;
     delete[] indArray;
-    delete texture;
+
     delete material;
 }
 
@@ -90,12 +89,6 @@ void PolygonalCube::render(QMatrix4x4& projection, QMatrix4x4& matrix, Light* li
     program->setUniformValue("mvp_matrix", projection * matrix);
     program->setUniformValue("mv_matrix", matrix);
     program->setUniformValue("normal_matrix", matrix.inverted().transposed());
-
-    texture->bind();
-
-    // Use texture unit 0 which contains cube.png
-    program->setUniformValue("texture", 0);
-
 
     tt += delta;
     if(tt > 1.0f){
@@ -146,22 +139,6 @@ void PolygonalCube::render(QMatrix4x4& projection, QMatrix4x4& matrix, Light* li
     glDrawElements(mode, indicesSize, GL_UNSIGNED_INT, 0);
 
     program->release();
-}
-
-void PolygonalCube::initTextures(){
-
-    // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
-
-    // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
-
-    // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
-
-    // Wrap texture coordinates by repeating
-    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void PolygonalCube::initShaders(){
