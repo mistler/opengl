@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     materials/defaultmaterial.cpp \
     lights/pointlightsource.cpp \
     lights/directionallightsource.cpp \
-    lights/spotlightsource.cpp
+    lights/spotlightsource.cpp \
+    meshes/meshfromobj.cpp
 
 HEADERS += \
     mainwidget.h \
@@ -30,11 +31,13 @@ HEADERS += \
     materials/defaultmaterial.h \
     lights/pointlightsource.h \
     lights/directionallightsource.h \
-    lights/spotlightsource.h
+    lights/spotlightsource.h \
+    meshes/meshfromobj.h
 
 RESOURCES += \
     shaders/sphere/sphereshaders.qrc \
     shaders/polygonalcube/polygonalcubeshaders.qrc \
-    textures.qrc
+    textures.qrc \
+    meshObjects.qrc
 
 INSTALLS += target

@@ -125,6 +125,7 @@ void main()
 
        // write Total Color:
        gl_FragColor = finalColor;
+       //gl_FragColor = vec4(0.5, 0.5, 0.5, 0.5);
 
 }
 //! [0]

@@ -46,6 +46,7 @@
 
 #include "meshes/polygonalcube.h"
 #include "meshes/sphere.h"
+#include "meshes/meshfromobj.h"
 
 #include "lights/pointlightsource.h"
 #include "lights/directionallightsource.h"
@@ -131,7 +132,8 @@ void MainWidget::initializeGL()
 
 
     //mesh = new PolygonalCube(POLYGONES, &program);
-    mesh = new Sphere(POLYGONES, &program);
+    //mesh = new Sphere(POLYGONES, &program);
+    mesh = new MeshFromObj(&program, "/home/mistler/Documents/prog/opengl/opengl/MeshHouse.obj");
 
 
     light = new Light();

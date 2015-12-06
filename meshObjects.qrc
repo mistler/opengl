@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MeshSphere.obj</file>
+        <file>MeshHouse.obj</file>
+    </qresource>
+</RCC>
